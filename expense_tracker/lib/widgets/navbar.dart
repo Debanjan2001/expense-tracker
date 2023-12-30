@@ -3,30 +3,35 @@ import 'package:flutter/material.dart';
 class Navbar extends StatelessWidget {
   const Navbar({super.key});
 
-
   @override
   Widget build(BuildContext context) {
-    bool isDarkMode = (MediaQuery.of(context).platformBrightness == Brightness.dark);
+    bool isDarkMode =
+        (MediaQuery.of(context).platformBrightness == Brightness.dark);
 
-    return Container(
-      width: MediaQuery.of(context).size.width,
-      height: MediaQuery.of(context).size.height * 0.075,
-      padding: const EdgeInsets.all(10.0),
-      decoration: BoxDecoration(
-        // borderRadius: BorderRadius.circular(10),
-        // border: Border.all(
+    return SafeArea(
+      child: Container(
+        width: MediaQuery.of(context).size.width,
+        height: MediaQuery.of(context).size.height * 0.075,
+        padding: const EdgeInsets.only(
+          left: 25.0,
+          right: 25.0,
+        ),
+        decoration: BoxDecoration(
+          // borderRadius: BorderRadius.circular(10),
+          // border: Border.all(
           // color: Colors.redAccent,
-          // width: 2, 
-        // ),
-        color: (isDarkMode ? Colors.blue: Colors.orange.shade800),
-      ),
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
+          // width: 2,
+          // ),
+          color: (isDarkMode ? Colors.blue.shade800 : Colors.orange.shade800),
+        ),
         child: Row(
+          // make the row children align to center
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text('NavItem1'),
-            SizedBox(width: 50),
-            Text('NavItem2'),
+            // Add an icon here of money
+            Icon(Icons.monetization_on),
+            SizedBox(width: 10),
+            Text('Expense Tracker'),
           ],
         ),
       ),

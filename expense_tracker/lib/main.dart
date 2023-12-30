@@ -1,18 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'screens/homepage.dart' as homepage;
 import 'services/services.dart';
+import 'package:expense_tracker/screens/mainView.dart';
 
-void main() async{
+void main() async {
   WidgetsFlutterBinding.ensureInitialized(); // add this before runApp
   Services services = Services();
   await services.initDB();
-  runApp(
-    Provider<Services>(
-      create: (_) => services,
-      child: const MainApp(),
-    )
-  );
+  runApp(Provider<Services>(
+    create: (_) => services,
+    child: const MainApp(),
+  ));
 }
 
 class MainApp extends StatelessWidget {
@@ -23,26 +21,26 @@ class MainApp extends StatelessWidget {
     return MaterialApp(
       title: 'Expense Tracker App',
       theme: ThemeData(
-        // fontFamily: 'OpenSans',
-        brightness: Brightness.light, /* light theme settings */
-         textTheme: const TextTheme(
-          bodyLarge: TextStyle(color: Colors.black),
-        )
-      ),
+          fontFamily: 'OpenSans',
+          brightness: Brightness.light,
+          /* light theme settings */
+          textTheme: const TextTheme(
+            bodyLarge: TextStyle(color: Colors.black),
+          )),
       darkTheme: ThemeData(
-        // fontFamily: 'OpenSans',
-        brightness: Brightness.dark,  /* dark theme settings */
-        textTheme: const TextTheme(
-          bodyLarge: TextStyle(color: Colors.white),
-        )
-      ),
-      themeMode: ThemeMode.system, 
+          fontFamily: 'OpenSans',
+          brightness: Brightness.dark,
+          /* dark theme settings */
+          textTheme: const TextTheme(
+            bodyLarge: TextStyle(color: Colors.white),
+          )),
+      themeMode: ThemeMode.system,
       /* ThemeMode.system to follow system theme, 
          ThemeMode.light for light theme, 
          ThemeMode.dark for dark theme
       */
       // debugShowCheckedModeBanner: false,
-      home: const homepage.MainView(),
+      home: const MainView(),
     );
   }
 }
