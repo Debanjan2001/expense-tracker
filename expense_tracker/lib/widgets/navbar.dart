@@ -18,7 +18,7 @@ class Navbar extends StatelessWidget {
           // color: Colors.redAccent,
           // width: 2, 
         // ),
-        color: (isDarkMode ? Colors.blue: Colors.orange.shade600),
+        color: (isDarkMode ? Colors.blue: Colors.orange.shade800),
       ),
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,

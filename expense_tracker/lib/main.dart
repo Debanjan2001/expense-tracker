@@ -1,28 +1,38 @@
 import 'package:flutter/material.dart';
-import 'homepage.dart' as homepage;
+import 'package:provider/provider.dart';
+import 'screens/homepage.dart' as homepage;
+import 'services/services.dart';
 
-void main() {
-  // WidgetsFlutterBinding.ensureInitialized(); // add this before runApp
-  runApp(const MainApp());
+void main() async{
+  WidgetsFlutterBinding.ensureInitialized(); // add this before runApp
+  Services services = Services();
+  await services.initDB();
+  runApp(
+    Provider<Services>(
+      create: (_) => services,
+      child: const MainApp(),
+    )
+  );
 }
 
 class MainApp extends StatelessWidget {
+  // get db from provider
   const MainApp({super.key});
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Expense Tracker App',
       theme: ThemeData(
-        fontFamily: 'OpenSans',
+        // fontFamily: 'OpenSans',
         brightness: Brightness.light, /* light theme settings */
-         textTheme: TextTheme(
+         textTheme: const TextTheme(
           bodyLarge: TextStyle(color: Colors.black),
         )
       ),
       darkTheme: ThemeData(
-        fontFamily: 'OpenSans',
+        // fontFamily: 'OpenSans',
         brightness: Brightness.dark,  /* dark theme settings */
-        textTheme: TextTheme(
+        textTheme: const TextTheme(
           bodyLarge: TextStyle(color: Colors.white),
         )
       ),
@@ -32,7 +42,7 @@ class MainApp extends StatelessWidget {
          ThemeMode.dark for dark theme
       */
       // debugShowCheckedModeBanner: false,
-      home: homepage.Homepage(),
+      home: const homepage.MainView(),
     );
   }
 }
