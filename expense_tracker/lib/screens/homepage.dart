@@ -1,6 +1,4 @@
-import 'package:expense_tracker/screens/mainView.dart';
 import 'package:flutter/material.dart';
-import 'package:expense_tracker/utils/enums.dart';
 // import 'package:flutter_sms_inbox/flutter_sms_inbox.dart';
 // import 'package:permission_handler/permission_handler.dart';
 
@@ -9,7 +7,7 @@ class Homepage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
+    return const Expanded(
       child: SingleChildScrollView(
         scrollDirection: Axis.vertical,
         child: Column(
@@ -58,7 +56,7 @@ class AnalyticsWidget extends StatelessWidget {
     return Container(
         width: MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.height * 0.3,
-        margin: EdgeInsets.all(10.0),
+        margin: const EdgeInsets.all(10.0),
         decoration: BoxDecoration(
           // color: Colors.grey,
           borderRadius: BorderRadius.circular(10),
@@ -73,9 +71,9 @@ class AnalyticsWidget extends StatelessWidget {
           child: Column(
             children: [
               // Add a button here that will open a new page using navigator
-              Text('AnalyticsWidget'),
-              SizedBox(height: 20),
-              Row(
+              const Text('AnalyticsWidget'),
+              const SizedBox(height: 20),
+              const Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   Text('Analytics1'),
@@ -83,7 +81,7 @@ class AnalyticsWidget extends StatelessWidget {
                   Text('Analytics3'),
                 ],
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               ButtonBar(
                 alignment: MainAxisAlignment.center,
                 children: [
@@ -110,7 +108,7 @@ class TransactionsWidget extends StatelessWidget {
     return Container(
         width: MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.height * 0.3,
-        margin: EdgeInsets.all(10.0),
+        margin: const EdgeInsets.all(10.0),
         decoration: BoxDecoration(
           // color: Colors.grey,
           borderRadius: BorderRadius.circular(10),
@@ -123,9 +121,9 @@ class TransactionsWidget extends StatelessWidget {
           padding: const EdgeInsets.all(10.0),
           child: Column(
             children: [
-              Text('TransactionsWidget'),
-              SizedBox(height: 20),
-              Row(
+              const Text('TransactionsWidget'),
+              const SizedBox(height: 20),
+              const Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   Text('Transaction1'),
@@ -133,7 +131,7 @@ class TransactionsWidget extends StatelessWidget {
                   Text('Transaction3'),
                 ],
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               ButtonBar(
                 alignment: MainAxisAlignment.center,
                 children: [
@@ -159,7 +157,7 @@ class SettingsWidget extends StatelessWidget {
     return Container(
         width: MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.height * 0.3,
-        margin: EdgeInsets.all(10.0),
+        margin: const EdgeInsets.all(10.0),
         decoration: BoxDecoration(
           // color: Colors.grey,
           borderRadius: BorderRadius.circular(10),
@@ -172,9 +170,9 @@ class SettingsWidget extends StatelessWidget {
           padding: const EdgeInsets.all(10.0),
           child: Column(
             children: [
-              Text('SettingsWidget'),
-              SizedBox(height: 20),
-              Row(
+              const Text('SettingsWidget'),
+              const SizedBox(height: 20),
+              const Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   Text('Settings1'),
@@ -182,7 +180,7 @@ class SettingsWidget extends StatelessWidget {
                   Text('Settings3'),
                 ],
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               ButtonBar(
                 alignment: MainAxisAlignment.center,
                 children: [

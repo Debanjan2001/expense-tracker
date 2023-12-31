@@ -24,7 +24,7 @@ class Navbar extends StatelessWidget {
           // ),
           color: (isDarkMode ? Colors.blue.shade800 : Colors.orange.shade800),
         ),
-        child: Row(
+        child: const Row(
           // make the row children align to center
           mainAxisAlignment: MainAxisAlignment.center,
           children: [

@@ -1,17 +1,29 @@
-import 'package:expense_tracker/utils/enums.dart';
 
 class Transaction {
-  final String id;
+  final int? id;
+  final int? msgId;
   final String title;
   final double amount;
-  final DateTime date;
-  final TransactionType type;
+  final String date;
+  final String type;
 
   const Transaction({
-    required this.id,
+    this.id,
+    this.msgId,
     required this.title,
     required this.amount,
     required this.date,
     required this.type,
   });
+
+  Map<String, dynamic> toMap() {
+    return {
+      'msg_id': msgId,
+      'title': title,
+      'amount': amount,
+      'date': date,
+      'type': type,
+    };
+  }
+
 }

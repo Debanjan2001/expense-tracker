@@ -9,9 +9,16 @@ class Services {
       join(await getDatabasesPath(), 'expense_tracker.db'),
       version: 1,
       onCreate: (db, version) {
-        return db.execute(
-          "CREATE TABLE transactions(id INTEGER PRIMARY KEY, title TEXT, amount REAL, date TEXT, type TEXT)",
-        );
+        return db.execute('''
+          CREATE TABLE transactions(
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            msg_id INTEGER,
+            title TEXT,
+            amount REAL,
+            date TEXT, 
+            type TEXT
+          )
+        ''');
       },
     );
   }

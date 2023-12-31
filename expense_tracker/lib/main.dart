@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'services/services.dart';
-import 'package:expense_tracker/screens/mainView.dart';
+import 'package:expense_tracker/screens/main_view.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized(); // add this before runApp
@@ -21,19 +21,26 @@ class MainApp extends StatelessWidget {
     return MaterialApp(
       title: 'Expense Tracker App',
       theme: ThemeData(
-          fontFamily: 'OpenSans',
+          fontFamily: 'Montserrat',
           brightness: Brightness.light,
           /* light theme settings */
           textTheme: const TextTheme(
-            bodyLarge: TextStyle(color: Colors.black),
-          )),
+            // bodyLarge: TextStyle(color: Colors.black),
+            // bodyMedium: TextStyle(color: Colors.black),
+            // bodySmall: TextStyle(color: Colors.black),
+          )
+      ),
       darkTheme: ThemeData(
-          fontFamily: 'OpenSans',
+          fontFamily: 'Montserrat',
+          //use weight 700
           brightness: Brightness.dark,
           /* dark theme settings */
           textTheme: const TextTheme(
-            bodyLarge: TextStyle(color: Colors.white),
-          )),
+            // bodyLarge: TextStyle(color: Colors.white),
+            // bodyMedium: TextStyle(color: Colors.white),
+            // bodySmall: TextStyle(color: Colors.white),
+          )
+      ),
       themeMode: ThemeMode.system,
       /* ThemeMode.system to follow system theme, 
          ThemeMode.light for light theme, 
