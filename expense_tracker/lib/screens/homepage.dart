@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:expense_tracker/services/services.dart' as services;
 // import 'package:flutter_sms_inbox/flutter_sms_inbox.dart';
 // import 'package:permission_handler/permission_handler.dart';
 
@@ -100,11 +102,38 @@ class AnalyticsWidget extends StatelessWidget {
   }
 }
 
-class TransactionsWidget extends StatelessWidget {
+class TransactionsWidget extends StatefulWidget {
   const TransactionsWidget({super.key});
 
   @override
+  State<TransactionsWidget> createState() => _TransactionsWidgetState();
+}
+
+class _TransactionsWidgetState extends State<TransactionsWidget> {
+
+  double totAmount=0.0;
+
+  Future<void> getAmount(BuildContext context) async {
+    final db = Provider.of<services.Services>(context, listen: false).getDB();
+    final total = await db.rawQuery("SELECT SUM(amount) as 'sum' FROM transactions");
+    double sum = (total[0]['sum'] as num).toDouble();
+    setState((){
+      totAmount = sum;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      getAmount(context);
+    });
+  }
+
+
+  @override
   Widget build(BuildContext context) {
+    // get sum of all transactions
     return Container(
         width: MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.height * 0.3,
@@ -131,6 +160,8 @@ class TransactionsWidget extends StatelessWidget {
                   Text('Transaction3'),
                 ],
               ),
+              const SizedBox(height: 20),
+              Text('Total Amount: $totAmount'),
               const SizedBox(height: 20),
               ButtonBar(
                 alignment: MainAxisAlignment.center,
