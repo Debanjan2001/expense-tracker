@@ -1,35 +1,62 @@
 import 'package:flutter/material.dart';
 import 'package:expense_tracker/screens/transactions/transaction_home.dart' as transaction_home;
 import 'package:expense_tracker/screens/settings/settings.dart' as settings;
-
+import 'package:expense_tracker/screens/analytics/analytics_home.dart' as analytics_home;
 // import 'package:flutter_sms_inbox/flutter_sms_inbox.dart';
 // import 'package:permission_handler/permission_handler.dart';
 
-class Homepage extends StatelessWidget {
+class Homepage extends StatefulWidget {
   const Homepage({super.key});
 
   @override
+  State<Homepage> createState() => _HomepageState();
+}
+
+class _HomepageState extends State<Homepage> {
+  final ValueNotifier<bool> reloadNotifier = ValueNotifier<bool>(false);
+
+  @override
   Widget build(BuildContext context) {
-    return const Column(
-      children: [
-        Expanded(
-          child: SingleChildScrollView(
-            scrollDirection: Axis.vertical,
-            child: Column(
-              children: [
-                SizedBox(height: 20),
-                AnalyticsWidget(),
-                SizedBox(height: 20),
-                transaction_home.TransactionsWidget(),
-                SizedBox(height: 20),
-                settings.SettingsWidget(),
-                SizedBox(height: 20),
-                FooterWidget()
-              ],
+    return RefreshIndicator(
+      onRefresh: () async {
+        await Future.delayed(const Duration(seconds: 1));
+        reloadNotifier.value = !reloadNotifier.value;
+      },
+      child: Column(
+        children: [
+          Expanded(
+            child: SingleChildScrollView(
+              scrollDirection: Axis.vertical,
+              child: Column(
+                children: [
+                  const SizedBox(height: 20),
+                  
+                  ValueListenableBuilder<bool>(
+                    valueListenable: reloadNotifier,
+                    builder: (context, value, child) {
+                      return analytics_home.AnalyticsWidget(key: UniqueKey());
+                    },
+                  ),
+
+                  const SizedBox(height: 20),
+                  
+                  ValueListenableBuilder<bool>(
+                    valueListenable: reloadNotifier,
+                    builder: (context, value, child) {
+                      return transaction_home.TransactionsWidget(key: UniqueKey());
+                    },
+                  ),
+
+                  const SizedBox(height: 20),
+                  const settings.SettingsWidget(),
+                  const SizedBox(height: 20),
+                  const FooterWidget()
+                ],
+              ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
@@ -57,68 +84,6 @@ class Homepage extends StatelessWidget {
 // print("****************************************");
 // }
 
-class AnalyticsWidget extends StatelessWidget {
-  const AnalyticsWidget({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: (){
-        Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (context) => const Placeholder(),
-          )
-        );
-      },
-      child: Container(
-          // take max of required
-          margin: const EdgeInsets.all(10.0),
-          decoration: BoxDecoration(
-            // color: Colors.grey,
-            borderRadius: BorderRadius.circular(10),
-            border: Border.all(
-              color: Colors.orange,
-              width: 2,
-            ),
-            //shadow
-          ),
-          child: Container(
-            padding: const EdgeInsets.all(10.0),
-            child: Column(
-              children: [
-                // Add a button here that will open a new page using navigator
-                const Text('AnalyticsWidget'),
-                const SizedBox(height: 20),
-                const Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    Text('Analytics1'),
-                    Text('Analytics2'),
-                    Text('Analytics3'),
-                  ],
-                ),
-                const SizedBox(height: 20),
-                ButtonBar(
-                  alignment: MainAxisAlignment.center,
-                  children: [
-                    ElevatedButton(
-                      onPressed: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => const Placeholder(),
-                          )
-                        );
-                      },
-                      child: const Text('View Details'),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          )),
-    );
-  }
-}
 
 // create another class for a widget
 // this widget will display the following text:
@@ -135,10 +100,6 @@ class FooterWidget extends StatelessWidget {
         padding: const EdgeInsets.all(10.0),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
-          border: Border.all(
-            color: Colors.green.shade700,
-            width: 2,
-          ),
           boxShadow: const [
             BoxShadow(
               color: Colors.black,

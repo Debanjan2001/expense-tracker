@@ -38,11 +38,14 @@ class TransactionFormState extends State<TransactionForm> {
     // get the services provider
     final db = Provider.of<services.Services>(context, listen: false).getDB();
     // get the transaction data
+    final parsedDate = DateFormat('dd-MMM-yyyy').parse(_dateController.text);
     final transaction = transaction_model.Transaction(
       title: _titleController.text,
       amount: double.parse(_amountController.text),
-      date: DateFormat('dd-MMM-yyyy').parse(_dateController.text).toIso8601String(),
       type: _transactionType,
+      day: parsedDate.day,
+      month: parsedDate.month,
+      year: parsedDate.year,
     );
 
     // insert the transaction into the database

@@ -4,16 +4,20 @@ class Transaction {
   final int? msgId;
   final String title;
   final double amount;
-  final String date;
   final String type;
+  final int day;
+  final int month;
+  final int year;
 
   const Transaction({
     this.id,
     this.msgId,
     required this.title,
     required this.amount,
-    required this.date,
     required this.type,
+    required this.day,
+    required this.month,
+    required this.year,
   });
 
   Map<String, dynamic> toMap() {
@@ -21,9 +25,10 @@ class Transaction {
       'msg_id': msgId,
       'title': title,
       'amount': amount,
-      'date': date,
       'type': type,
+      'day': day,
+      'month': month,
+      'year': year,
     };
   }
-
 }

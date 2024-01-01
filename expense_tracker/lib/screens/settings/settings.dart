@@ -19,7 +19,7 @@ class SettingsWidget extends StatelessWidget {
           padding: const EdgeInsets.all(10.0),
           child: Column(
             children: [
-              const Text('SettingsWidget'),
+              const Text('Quick Settings'),
               const SizedBox(height: 20),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -35,6 +35,21 @@ class SettingsWidget extends StatelessWidget {
                     onPressed: () {
                     },
                     label: const Text('Backup'),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+
+              const Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.arrow_downward),
+                  SizedBox(width: 5),
+                  Text(
+                    'Pull down at top to refresh',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold, // Makes the text bold
+                    ),
                   ),
                 ],
               ),

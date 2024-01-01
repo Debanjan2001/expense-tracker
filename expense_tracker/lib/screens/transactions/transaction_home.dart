@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:expense_tracker/services/services.dart' as services;
-
 
 class TransactionsWidget extends StatefulWidget {
   const TransactionsWidget({super.key});
@@ -10,8 +10,7 @@ class TransactionsWidget extends StatefulWidget {
   State<TransactionsWidget> createState() => _TransactionsWidgetState();
 }
 
-class _TransactionsWidgetState extends State<TransactionsWidget>{
-
+class _TransactionsWidgetState extends State<TransactionsWidget> {
   late Future<double> monthlyExpenseAmount;
   late Future<List> lastThreeTransactions;
   @override
@@ -25,15 +24,15 @@ class _TransactionsWidgetState extends State<TransactionsWidget>{
     final db = Provider.of<services.Services>(context, listen: false).getDB();
     final queryResult = await db.query(
       'transactions',
-      columns: ['title', 'amount', 'date', 'type'],
+      columns: ['title', 'amount', 'type', 'day', 'month', 'year'],
       orderBy: 'id DESC',
       limit: 3,
     );
-    await Future.delayed(const Duration(milliseconds: 500), (){});
+    await Future.delayed(const Duration(milliseconds: 500), () {});
     return queryResult;
   }
 
-  Widget getLastThreeTransactionsWidget(){
+  Widget getLastThreeTransactionsWidget() {
     return FutureBuilder<List>(
       future: lastThreeTransactions,
       builder: (BuildContext context, AsyncSnapshot<List> snapshot) {
@@ -51,26 +50,51 @@ class _TransactionsWidgetState extends State<TransactionsWidget>{
                 LinearProgressIndicator(),
               ],
             ),
-         );
-
-
+          );
         } else if (snapshot.hasError) {
           return Text('${snapshot.error}');
-        } else {
-          return Column(
-            children: [
-              const Text('Last 3 Transactionconst s: '),
-              for (var transaction in snapshot.data!)
-                Text("${transaction['title']} - ${transaction['type']} - ${transaction['amount']} - ${transaction['date'].toString().substring(0, 10)}",
-                  style: TextStyle(
-                    color: (transaction['type'] == 'Debit'
-                        ? Colors.red
-                        : Colors.green),
-                  ), 
-                ),
-            ],
-          );
         }
+
+        if (snapshot.data!.isEmpty) {
+          return const Text('No transactions found');
+        }
+
+        return Column(
+          children: snapshot.data!.map((transaction) {
+            return Card(
+              margin: const EdgeInsets.all(8.0),
+              child: ListTile(
+                leading: CircleAvatar(
+                  backgroundColor: transaction['type'] == 'Debit'
+                      ? Colors.red
+                      : Colors.green,
+                  child: Text(transaction['title'][0]),
+                ),
+                title: Text(
+                  (transaction['title'].toString().length > 20)
+                  ? '${transaction['title'].toString().substring(0, 20)}...'
+                  : transaction['title'].toString(),
+
+                ),
+                subtitle: Text(
+                  // format to dd-mmm-yyyy
+                  DateFormat('dd-MMM-yyyy').format(
+                    DateTime(transaction['year'], transaction['month'], transaction['day'])
+                  ).toString()
+                ),
+                trailing: Text(
+                  transaction['amount'].toStringAsFixed(2),
+                  style: TextStyle(
+                    color: transaction['type'] == 'Debit'
+                        ? Colors.red
+                        : Colors.green,
+                    fontSize: 20,
+                  ),
+                ),
+              ),
+            );
+          }).toList(),
+        );
       },
     );
   }
@@ -87,19 +111,23 @@ class _TransactionsWidgetState extends State<TransactionsWidget>{
       where: '''
         type = 'Debit'
         AND
-        date >= '${startDayOfMonth.toIso8601String()}'
+        year = ${startDayOfMonth.year}
         AND
-        date <= '${lastDayOfMonth.toIso8601String()}'
-      ''',      
+        month = ${startDayOfMonth.month}
+        AND
+        day >= ${startDayOfMonth.day}
+        AND
+        day <= ${lastDayOfMonth.day}
+      ''',
     );
-    await Future.delayed(const Duration(milliseconds: 500), (){});
+    await Future.delayed(const Duration(milliseconds: 500), () {});
 
     // sleep for 1000ms
-    double sum = (queryResult[0]['sum'] as num).toDouble();
+    double sum = ((queryResult[0]['sum'] ?? 0.0) as num).toDouble();
     return sum;
   }
 
-  Widget getMonthlyExpenseWidget(){
+  Widget getMonthlyExpenseWidget() {
     return FutureBuilder<double>(
       future: monthlyExpenseAmount,
       builder: (BuildContext context, AsyncSnapshot<double> snapshot) {
@@ -108,7 +136,31 @@ class _TransactionsWidgetState extends State<TransactionsWidget>{
         } else if (snapshot.hasError) {
           return Text('${snapshot.error}');
         } else {
-          return Text('${snapshot.data}');
+          return Card(
+            margin: const EdgeInsets.all(8.0),
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                children: [
+                  const Text(
+                    "This Month's Expense",
+                    style: TextStyle(
+                      fontSize: 20.0,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 10.0),
+                  Text(
+                    'INR ${snapshot.data!.toStringAsFixed(2)}',
+                    style: const TextStyle(
+                      fontSize: 24.0,
+                      color: Colors.red,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
         }
       },
     );
@@ -120,56 +172,52 @@ class _TransactionsWidgetState extends State<TransactionsWidget>{
     Widget monthlyExpenseWidget = getMonthlyExpenseWidget();
     Widget lastThreeTransactionsWidget = getLastThreeTransactionsWidget();
 
-    return Container(
-        margin: const EdgeInsets.all(10.0),
-        decoration: BoxDecoration(
-          // color: Colors.grey,
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(
-            color: Colors.orange,
-            width: 2,
+    return GestureDetector(
+      onTap: (){
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => const Placeholder(),
+          )
+        );
+      },
+      child: Container(
+          margin: const EdgeInsets.all(10.0),
+          decoration: BoxDecoration(
+            // color: Colors.grey,
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(
+              color: Colors.orange,
+              width: 2,
+            ),
           ),
-        ),
-        child: Container(
-          padding: const EdgeInsets.all(10.0),
-          child: Column(
-            children: [
-              const Text('Latest Transactions'),
-              const SizedBox(height: 20),
-              lastThreeTransactionsWidget,
-              const SizedBox(height: 20),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Text('Total Amount Spent this month:'),
-                  const SizedBox(height: 10),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Text('INR'),
-                      const SizedBox(width: 10),
-                      monthlyExpenseWidget,
-                    ],
-                  ),
-                ],
-              ),
-              const SizedBox(height: 20),
-              ButtonBar(
-                alignment: MainAxisAlignment.center,
-                children: [
-                  ElevatedButton(
-                    onPressed: () {
-                      setState(() {
-                        monthlyExpenseAmount = getAmount();
-                        lastThreeTransactions = getLastThreeTransactions();
-                      });
-                    },
-                    child: const Text('View Details'),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ));
+          child: Container(
+            padding: const EdgeInsets.all(10.0),
+            child: Column(
+              children: [
+                const Text('Latest Transactions'),
+                const SizedBox(height: 20),
+                lastThreeTransactionsWidget,
+                const SizedBox(height: 20),
+                monthlyExpenseWidget,
+                const SizedBox(height: 20),
+                ButtonBar(
+                  alignment: MainAxisAlignment.center,
+                  children: [
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => const Placeholder(),
+                          )
+                        );
+                      },
+                      child: const Text('View Details'),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          )),
+    );
   }
 }

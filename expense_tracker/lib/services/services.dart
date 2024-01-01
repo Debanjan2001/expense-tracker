@@ -15,8 +15,10 @@ class Services {
             msg_id INTEGER,
             title TEXT,
             amount REAL,
-            date TEXT, 
-            type TEXT
+            type TEXT,
+            day INTEGER,
+            month INTEGER,
+            year INTEGER
           )
         ''');
       },
