@@ -40,20 +40,6 @@ class SettingsWidget extends StatelessWidget {
               ),
               const SizedBox(height: 20),
 
-              const Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.arrow_downward),
-                  SizedBox(width: 5),
-                  Text(
-                    'Pull down at top to refresh',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold, // Makes the text bold
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 20),
               ButtonBar(
                 alignment: MainAxisAlignment.center,
                 children: [

@@ -100,9 +100,8 @@ class TransactionFormState extends State<TransactionForm> {
     return Scaffold(
       backgroundColor:
           (isDarkMode ? Colors.black87 : Colors.white.withOpacity(0.95)),
-      appBar: const PreferredSize(
-        preferredSize: Size.fromHeight(70),
-        child: navbar.Navbar(),
+      appBar: AppBar(
+        title: const Text('Add Transaction'),
       ),
       body: SafeArea(
         child: Container(

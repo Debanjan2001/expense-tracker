@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:expense_tracker/screens/transactions/transaction_home.dart' as transaction_home;
-import 'package:expense_tracker/screens/settings/settings.dart' as settings;
+import 'package:expense_tracker/screens/settings/quick_settings.dart' as settings;
 import 'package:expense_tracker/screens/analytics/analytics_home.dart' as analytics_home;
+import 'package:expense_tracker/widgets/navbar.dart' as navbar;
 // import 'package:flutter_sms_inbox/flutter_sms_inbox.dart';
 // import 'package:permission_handler/permission_handler.dart';
 
@@ -24,26 +25,41 @@ class _HomepageState extends State<Homepage> {
       },
       child: Column(
         children: [
+          const navbar.Navbar(),
+          const SizedBox(height: 10),
           Expanded(
             child: SingleChildScrollView(
               scrollDirection: Axis.vertical,
               child: Column(
                 children: [
-                  const SizedBox(height: 20),
-                  
-                  ValueListenableBuilder<bool>(
-                    valueListenable: reloadNotifier,
-                    builder: (context, value, child) {
-                      return analytics_home.AnalyticsWidget(key: UniqueKey());
-                    },
+                  const Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.arrow_downward),
+                      SizedBox(width: 5),
+                      Text(
+                        'Pull down at top to refresh',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold, // Makes the text bold
+                        ),
+                      ),
+                    ],
                   ),
-
                   const SizedBox(height: 20),
-                  
+
                   ValueListenableBuilder<bool>(
                     valueListenable: reloadNotifier,
                     builder: (context, value, child) {
                       return transaction_home.TransactionsWidget(key: UniqueKey());
+                    },
+                  ),
+
+                  const SizedBox(height: 20),
+                 
+                  ValueListenableBuilder<bool>(
+                    valueListenable: reloadNotifier,
+                    builder: (context, value, child) {
+                      return analytics_home.AnalyticsWidget(key: UniqueKey());
                     },
                   ),
 

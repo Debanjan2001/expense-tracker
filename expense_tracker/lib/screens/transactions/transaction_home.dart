@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:expense_tracker/services/services.dart' as services;
+import 'package:expense_tracker/screens/transactions/transaction_list.dart' as transaction_list;
 
 class TransactionsWidget extends StatefulWidget {
   const TransactionsWidget({super.key});
@@ -176,7 +177,7 @@ class _TransactionsWidgetState extends State<TransactionsWidget> {
       onTap: (){
         Navigator.of(context).push(
           MaterialPageRoute(
-            builder: (context) => const Placeholder(),
+            builder: (context) => const transaction_list.TransactionList(),
           )
         );
       },
@@ -194,7 +195,7 @@ class _TransactionsWidgetState extends State<TransactionsWidget> {
             padding: const EdgeInsets.all(10.0),
             child: Column(
               children: [
-                const Text('Latest Transactions'),
+                const Text('Recent Transactions'),
                 const SizedBox(height: 20),
                 lastThreeTransactionsWidget,
                 const SizedBox(height: 20),
@@ -207,7 +208,7 @@ class _TransactionsWidgetState extends State<TransactionsWidget> {
                       onPressed: () {
                         Navigator.of(context).push(
                           MaterialPageRoute(
-                            builder: (context) => const Placeholder(),
+                            builder: (context) => const transaction_list.TransactionList(),
                           )
                         );
                       },

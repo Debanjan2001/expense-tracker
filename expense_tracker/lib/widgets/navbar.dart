@@ -11,7 +11,7 @@ class Navbar extends StatelessWidget {
     return SafeArea(
       child: Container(
         width: MediaQuery.of(context).size.width,
-        height: MediaQuery.of(context).size.height * 0.075,
+        height: 60,
         padding: const EdgeInsets.only(
           left: 25.0,
           right: 25.0,
@@ -29,9 +29,9 @@ class Navbar extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             // Add an icon here of money
-            Icon(Icons.monetization_on),
+            Icon(Icons.monetization_on, size: 30,),
             SizedBox(width: 10),
-            Text('Expense Tracker'),
+            Text('Expense Tracker', style: TextStyle(fontSize: 20),),
           ],
         ),
       ),
