@@ -11,7 +11,7 @@ enum TransactionType {
   credit,
 }
 
-const Map<int, String> monthNames = {
+const Map<int, String> monthNumToName = {
   1: 'Jan',
   2: 'Feb',
   3: 'Mar',
@@ -24,4 +24,19 @@ const Map<int, String> monthNames = {
   10: 'Oct',
   11: 'Nov',
   12: 'Dec',
+};
+
+const Map<String, int> monthNameToNum = {
+  'Jan': 1,
+  'Feb': 2,
+  'Mar': 3,
+  'Apr': 4,
+  'May': 5,
+  'Jun': 6,
+  'Jul': 7,
+  'Aug': 8,
+  'Sep': 9,
+  'Oct': 10,
+  'Nov': 11,
+  'Dec': 12,
 };

@@ -22,57 +22,58 @@ class TransactionListState extends State<TransactionList> {
   bool isLoadingTransactions = true;
   bool isLoadingOptions = true;
   List<String> transactionMonths = ['All'];
+  int? month, year;
 
   @override
   void initState() {
     super.initState();
-    getTransactionList(allRequired: true);
     _scrollController.addListener(_onScroll);
+    getInitialTransactionList();
+    getFilterOptionsList();
+    month = null;
+    year = null;
   }
 
-  Future<void> getTransactionList({bool allRequired=false, int? month, int? year}) async{
+  Future<void> getFilterOptionsList() async {
     final db = Provider.of<services.Services>(context, listen: false).getDB();
-    final List<Map<String, dynamic>> queryResult;
-
-    if(allRequired){
-      queryResult = await db.rawQuery('''
-        SELECT * FROM transactions
-        ORDER BY year DESC, month DESC, day DESC, id DESC
-        LIMIT $limit
-      ''');
-    }else{
-      queryResult = await db.rawQuery('''
-        SELECT * FROM transactions
-        WHERE month = $month AND year = $year
-        ORDER BY year DESC, month DESC, day DESC, id DESC
-      ''');
-    }
-
     final availableMonths = await db.rawQuery('''
       SELECT DISTINCT month, year 
       FROM transactions
       ORDER BY year DESC, month DESC
+    ''');
+    await Future.delayed(const Duration(milliseconds: 500), () {});
+
+    setState((){
+      transactionMonths.addAll(
+        availableMonths.map((row){
+          int month = int.parse(row['month'].toString());
+          int year = int.parse(row['year'].toString());
+          String option = "${constants.monthNumToName[month]}-$year";
+          return option;
+      }).toList());
+
+      isLoadingOptions=false;
+    });
+  }
+
+  Future<void> getInitialTransactionList() async{
+    final db = Provider.of<services.Services>(context, listen: false).getDB();
+    final queryResult = await db.rawQuery('''
+      SELECT * FROM transactions
+      ORDER BY year DESC, month DESC, day DESC, id DESC
+      LIMIT $limit
     ''');
 
     await Future.delayed(const Duration(milliseconds: 500), () {});
 
     setState(() {
       transactions.addAll(queryResult);
-      transactionMonths.addAll(
-        availableMonths.map((row){
-          int month = int.parse(row['month'].toString());
-          int year = int.parse(row['year'].toString());
-          String option = "${constants.monthNames[month]}-$year";
-          return option;
-      }).toList());
-
       if (queryResult.length < limit) {
         _scrollController.removeListener(_onScroll);
       }else{
         offset += limit;
       }
       isLoadingTransactions=false;
-      isLoadingOptions=false;
     });
   }
 
@@ -82,22 +83,36 @@ class TransactionListState extends State<TransactionList> {
     }
     if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
       // Load more data when the user scrolls to the end of the list
-      _loadMoreData();
+      _loadMoreDataOnScroll();
     }
   }
 
-  Future<void> _loadMoreData() async{
+  Future<void> _loadMoreDataOnScroll({int? month, int? year}) async{
     setState((){
       isLoadingTransactions=true;
     });
 
     final db = Provider.of<services.Services>(context, listen: false).getDB();
-    final queryResult = await db.rawQuery('''
-      SELECT * FROM transactions
-      ORDER BY year DESC, month DESC, day DESC, id DESC
-      LIMIT $limit
-      OFFSET $offset
-    ''');
+    final List<Map<String, dynamic>> queryResult;
+
+    if(month == null){
+      queryResult = await db.rawQuery('''
+        SELECT * FROM transactions
+        ORDER BY year DESC, month DESC, day DESC, id DESC
+        LIMIT $limit
+        OFFSET $offset
+      ''');
+    }else{
+      assert(year != null);
+      queryResult = await db.rawQuery('''
+        SELECT * FROM transactions
+        WHERE month = $month AND year = $year
+        ORDER BY year DESC, month DESC, day DESC, id DESC
+        LIMIT $limit
+        OFFSET $offset
+      ''');
+    }
+    
     await Future.delayed(const Duration(milliseconds: 1000), () {});
     
     // SetState
@@ -113,44 +128,114 @@ class TransactionListState extends State<TransactionList> {
     }); // Call setState to trigger a rebuild
   }
 
+  Future<void> reloadTransactionsOnOptionChange(int? month, int ?year) async{
+    setState((){
+      isLoadingTransactions=true;
+      offset = 0;
+      transactions.clear();
+      // _scrollController.addListener(_onScroll);
+      // very important to jump scroller to top
+      _scrollController.jumpTo(0.0);
+
+    });
+
+    final db = Provider.of<services.Services>(context, listen: false).getDB();
+    List<Map<String, dynamic>> queryResult;
+
+    if(month == null){
+      queryResult = await db.rawQuery('''
+        SELECT * FROM transactions
+        ORDER BY year DESC, month DESC, day DESC, id DESC
+        LIMIT $limit
+      ''');
+    }else{
+      assert(year != null);
+      print("$year---$month\n");
+      queryResult = await db.rawQuery('''
+        SELECT * FROM transactions
+        WHERE month = $month AND year = $year
+        ORDER BY year DESC, month DESC, day DESC, id DESC
+        LIMIT $limit
+      ''');
+      print(queryResult.map((e) => e['month']).toList());
+    }
+    await Future.delayed(const Duration(milliseconds: 500), () {});
+
+    setState((){
+      transactions.addAll(queryResult);
+      // Disable scroll controller when there is no more data available
+      if (queryResult.length < limit) {
+        _scrollController.removeListener(_onScroll);
+      }else{
+        offset += limit;
+      }
+      isLoadingTransactions=false;
+    });
+  }
+
   Widget getFilterOptionsWidget(){
     if(isLoadingOptions){
       return const LinearProgressIndicator();
     }
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.end,
-      children: [
-        Expanded(
-          child: DropdownButtonFormField<String>(
-          decoration: const InputDecoration(
-            border: OutlineInputBorder(),
-            filled: true,
-            fillColor: Colors.white,
+
+    return Container(
+      margin: EdgeInsets.only(
+        left: MediaQuery.of(context).size.width * 0.1,
+        right: MediaQuery.of(context).size.width * 0.1,
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          Expanded(
+            child: DropdownButtonFormField<String>(
+              decoration: const InputDecoration(
+                border: OutlineInputBorder(),
+                filled: true,
+                fillColor: Colors.white,
+              ),
+              value: transactionMonths[0],
+              icon: const Icon(Icons.arrow_downward, color: Colors.deepPurple),
+              iconSize: 24,
+              elevation: 16,
+              style: const TextStyle(color: Colors.deepPurple),
+              onChanged: (String? newValue) {
+                
+                // if(newValue == 'All'){
+                //   month = null; year=null;
+                // }else{
+                //   month = constants.monthNameToNum[newValue!.split('-')[0]];
+                //   year = int.parse(newValue.split('-')[1]);
+                // }
+                // setState((){}); // call to update state
+                // reloadTransactionsOnOptionChange(month, year);
+
+              },
+              items: transactionMonths.map((String value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child: Column(
+                    children: [
+                      Text(value, style: const TextStyle(fontSize: 16)),
+                      const Divider(color: Colors.grey, height: 2),
+                    ],
+                  ),
+                );
+              }).toList()
+            ),
           ),
-          value: 'All',
-          icon: const Icon(Icons.arrow_downward),
-          iconSize: 24,
-          elevation: 16,
-          style: const TextStyle(color: Colors.deepPurple),
-          onChanged: (String? newValue) {
-            // print('Selected $newValue');
-          },
-          items: transactionMonths.map((String value) {
-            return DropdownMenuItem<String>(
-              value: value,
-              child: Text(value),
-            );
-          }).toList()
-          ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
   Widget getTransactionsListWidget(){
     if(transactions.isEmpty){
+      if(isLoadingTransactions){
+        return const Center(child: CircularProgressIndicator());
+      }
       return const Center(child: Text('No transactions found'));
     }
+    
     return ListView.builder(
       key: const PageStorageKey('transactionList'), // Add a PageStorageKey here
       controller: _scrollController,
