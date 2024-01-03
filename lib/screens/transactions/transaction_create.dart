@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:expense_tracker/widgets/navbar.dart' as navbar;
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:expense_tracker/services/services.dart' as services;
