@@ -177,6 +177,7 @@ class _TransactionDetailsState extends State<TransactionDetails> {
                       //Update the transaction here
                       print('delete called');
                       FocusScope.of(context).unfocus();
+                      Navigator.pop(context, 'update');
                     },
                     child: const Text('Delete'),
                   ),
