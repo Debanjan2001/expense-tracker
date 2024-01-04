@@ -21,15 +21,24 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^3.0.1
+  flutter_launcher_icons: ^0.13.1
 
 flutter:
   fonts:
     - family: OpenSans
       fonts:
-        - asset: fonts/Open_Sans/static/OpenSans-Regular.ttf
+        - asset: assets/fonts/Open_Sans/static/OpenSans-Regular.ttf
 
     - family: Montserrat
       fonts:
-        - asset: fonts/Montserrat/static/Montserrat-Medium.ttf
+        - asset: assets/fonts/Montserrat/static/Montserrat-Medium.ttf
           
   uses-material-design: true
+
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  # "Icon made by Pixel perfect from www.flaticon.com"
+  # Source: https://www.flaticon.com/free-icon/budget_781760?term=expense&page=1&position=5&origin=search&related_id=781760
+  image_path: "assets/icon/icon.png" 
