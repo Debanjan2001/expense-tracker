@@ -23,6 +23,7 @@ class TransactionFormState extends State<TransactionForm> {
     text: DateFormat('dd-MMM-yyyy').format(DateTime.now()),
   );
   String _transactionType = constants.transactionTypes.first;
+  bool? staleDataPossibilityInParent = false;
 
 
   @override
@@ -103,118 +104,134 @@ class TransactionFormState extends State<TransactionForm> {
         title: const Text('Add Transaction'),
       ),
       body: SafeArea(
-        child: Container(
-          margin: const EdgeInsets.all(15.0),
-          child: Form(
-            key: _formKey,
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(15.0),
-              child: Column(
-                children: [
-                  TextFormField(
-                    controller: _titleController,
-                    decoration: const InputDecoration(
-                      labelText: 'Description',
-                      border: OutlineInputBorder(),
-                      filled: true,
+        child: PopScope(
+          canPop: false,
+          onPopInvoked: (bool didPop){
+            if (didPop) {
+              return;
+            }
+            if(staleDataPossibilityInParent!){
+              Navigator.of(context).pop('update');
+            }else{
+              Navigator.of(context).pop();
+            }
+          },
+          child: Container(
+            margin: const EdgeInsets.all(15.0),
+            child: Form(
+              key: _formKey,
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(15.0),
+                child: Column(
+                  children: [
+                    TextFormField(
+                      controller: _titleController,
+                      decoration: const InputDecoration(
+                        labelText: 'Description',
+                        border: OutlineInputBorder(),
+                        filled: true,
+                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter some text';
+                        }
+                        return null;
+                      },
                     ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter some text';
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 20),
-                  TextFormField(
-                    controller: _amountController,
-                    keyboardType:
-                        const TextInputType.numberWithOptions(decimal: true),
-                    decoration: const InputDecoration(
-                      labelText: 'Enter amount',
-                      border: OutlineInputBorder(),
-                      filled: true,
+                    const SizedBox(height: 20),
+                    TextFormField(
+                      controller: _amountController,
+                      keyboardType:
+                          const TextInputType.numberWithOptions(decimal: true),
+                      decoration: const InputDecoration(
+                        labelText: 'Enter amount',
+                        border: OutlineInputBorder(),
+                        filled: true,
+                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter some text';
+                        }
+                        // check if value is a number
+                        if (double.tryParse(value) == null) {
+                          return 'Please enter a valid number';
+                        }
+                        return null;
+                      },
                     ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter some text';
-                      }
-                      // check if value is a number
-                      if (double.tryParse(value) == null) {
-                        return 'Please enter a valid number';
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 20),
-                  TextFormField(
-                    controller: _dateController,
-                    decoration: const InputDecoration(
-                      labelText: 'Enter date',
-                      border: OutlineInputBorder(),
-                      filled: true,
+                    const SizedBox(height: 20),
+                    TextFormField(
+                      controller: _dateController,
+                      decoration: const InputDecoration(
+                        labelText: 'Enter date',
+                        border: OutlineInputBorder(),
+                        filled: true,
+                      ),
+                      onTap: () async {
+                        FocusScope.of(context).requestFocus(
+                            FocusNode()); // to prevent opening the onscreen keyboard
+                        final DateTime? picked = await showDatePicker(
+                          context: context,
+                          initialDate: DateTime.now(),
+                          firstDate: DateTime(2000),
+                          lastDate: DateTime(2100),
+                        );
+                        if (picked != null && picked != DateTime.now()) {
+                          _dateController.text =
+                              DateFormat('dd-MMM-yyyy').format(picked);
+                        }
+                      },
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter some text';
+                        }
+                        return null;
+                      },
                     ),
-                    onTap: () async {
-                      FocusScope.of(context).requestFocus(
-                          FocusNode()); // to prevent opening the onscreen keyboard
-                      final DateTime? picked = await showDatePicker(
-                        context: context,
-                        initialDate: DateTime.now(),
-                        firstDate: DateTime(2000),
-                        lastDate: DateTime(2100),
-                      );
-                      if (picked != null && picked != DateTime.now()) {
-                        _dateController.text =
-                            DateFormat('dd-MMM-yyyy').format(picked);
-                      }
-                    },
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter some text';
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 20),
-                  DropdownButtonFormField<String>(
-                    value: _transactionType,
-                    decoration: const InputDecoration(
-                      labelText: 'Transaction Type',
-                      border: OutlineInputBorder(),
-                      filled: true,
+                    const SizedBox(height: 20),
+                    DropdownButtonFormField<String>(
+                      value: _transactionType,
+                      decoration: const InputDecoration(
+                        labelText: 'Transaction Type',
+                        border: OutlineInputBorder(),
+                        filled: true,
+                      ),
+                      items: constants.transactionTypes
+                          .map<DropdownMenuItem<String>>((String value) {
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Text(value),
+                        );
+                      }).toList(),
+                      onChanged: (String? newValue) {
+                        setState(() {
+                          _transactionType = newValue!;
+                        });
+                      },
                     ),
-                    items: constants.transactionTypes
-                        .map<DropdownMenuItem<String>>((String value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(value),
-                      );
-                    }).toList(),
-                    onChanged: (String? newValue) {
-                      setState(() {
-                        _transactionType = newValue!;
-                      });
-                    },
-                  ),
-                  const SizedBox(height: 20),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: isDarkMode
-                          ? Colors.blue.shade800
-                          : Colors.orange.shade800, // background color
+                    const SizedBox(height: 20),
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: isDarkMode
+                            ? Colors.blue.shade800
+                            : Colors.orange.shade800, // background color
+                      ),
+                      onPressed: () {
+                        if (_formKey.currentState!.validate() == false) {
+                          return;
+                        }
+                        // Process data.
+                        FocusScope.of(context).unfocus();
+                        setState((){
+                          staleDataPossibilityInParent = true;
+                        });
+                        addTransaction();
+                        clearForm();
+                      },
+                      child: const Text('Add Expense'),
                     ),
-                    onPressed: () {
-                      if (_formKey.currentState!.validate() == false) {
-                        return;
-                      }
-                      // Process data.
-                      FocusScope.of(context).unfocus();
-                      addTransaction();
-                      clearForm();
-                    },
-                    child: const Text('Add Expense'),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),
