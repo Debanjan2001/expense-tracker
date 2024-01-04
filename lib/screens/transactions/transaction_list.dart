@@ -17,7 +17,7 @@ class TransactionListState extends State<TransactionList> {
 
   List<Map<String, dynamic>> transactions = [];
   final ScrollController _scrollController = ScrollController();
-  final int limit = 10;
+  final int limit = 20;
   int offset = 0;
   bool isLoadingTransactions = true;
   bool isLoadingOptions = true;
@@ -266,7 +266,6 @@ class TransactionListState extends State<TransactionList> {
             final result = await Navigator.of(context).push(
               MaterialPageRoute(builder: (context) => transaction_details.TransactionDetails(transaction: transaction))
             );
-
             if(result == 'update'){
               reloadTransactionsOnOptionChange(month, year);
               setState(() {

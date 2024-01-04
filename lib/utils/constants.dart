@@ -1,16 +1,3 @@
-// Used for MainView
-enum SubPage {
-  home,
-  transactions,
-  analytics,
-}
-
-// Used for the Transaction Model
-enum TransactionType {
-  debit,
-  credit,
-}
-
 const Map<int, String> monthNumToName = {
   1: 'Jan',
   2: 'Feb',
