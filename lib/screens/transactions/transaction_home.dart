@@ -100,6 +100,21 @@ class _TransactionsWidgetState extends State<TransactionsWidget> {
     );
   }
 
+  void pushDetailPageIntoNavigator() async {
+    final result = await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => const transaction_list.TransactionList(),
+      )
+    );
+
+    if(result == 'update'){
+      setState(() {
+        monthlyExpenseAmount = getAmount();
+        lastThreeTransactions = getLastThreeTransactions();
+      });
+    }
+  }
+
   Future<double> getAmount() async {
     final db = Provider.of<services.Services>(context, listen: false).getDB();
     DateTime now = DateTime.now();
@@ -175,11 +190,7 @@ class _TransactionsWidgetState extends State<TransactionsWidget> {
 
     return GestureDetector(
       onTap: (){
-        Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (context) => const transaction_list.TransactionList(),
-          )
-        );
+        pushDetailPageIntoNavigator();
       },
       child: Container(
           margin: const EdgeInsets.all(10.0),
@@ -206,11 +217,7 @@ class _TransactionsWidgetState extends State<TransactionsWidget> {
                   children: [
                     ElevatedButton(
                       onPressed: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => const transaction_list.TransactionList(),
-                          )
-                        );
+                        pushDetailPageIntoNavigator();
                       },
                       child: const Text('View Details'),
                     ),

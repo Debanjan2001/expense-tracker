@@ -40,3 +40,5 @@ const Map<String, int> monthNameToNum = {
   'Nov': 11,
   'Dec': 12,
 };
+
+const List<String> transactionTypes = <String>['Debit', 'Credit'];

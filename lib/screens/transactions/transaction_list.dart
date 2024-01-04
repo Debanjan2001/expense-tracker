@@ -24,6 +24,7 @@ class TransactionListState extends State<TransactionList> {
   List<String> transactionMonths = ['All'];
   int? month, year;
   String? selectedOption;
+  bool? staleDataPossibilityInParent;
 
   @override
   void initState() {
@@ -34,6 +35,7 @@ class TransactionListState extends State<TransactionList> {
     month = null;
     year = null;
     selectedOption = transactionMonths[0];
+    staleDataPossibilityInParent = false;
   }
 
   @override
@@ -259,11 +261,18 @@ class TransactionListState extends State<TransactionList> {
         }
         final transaction = transactions[index];
         return InkWell(
-          onTap: (){
+          onTap: () async{
             // print('Clicked card with transaction id: ${transaction['id']}');
-            Navigator.of(context).push(
-              MaterialPageRoute(builder: (context) => const transaction_details.TransactionDetails())
+            final result = await Navigator.of(context).push(
+              MaterialPageRoute(builder: (context) => transaction_details.TransactionDetails(transaction: transaction))
             );
+
+            if(result == 'update'){
+              reloadTransactionsOnOptionChange(month, year);
+              setState(() {
+                staleDataPossibilityInParent = true;
+              });
+            }
           },
           child: Card(
             margin: const EdgeInsets.all(8.0),
@@ -312,17 +321,31 @@ class TransactionListState extends State<TransactionList> {
         title: const Text('Transactions List'),
       ),
       body: SafeArea(
-        child: Container(
-          margin: const EdgeInsets.all(10.0),
-          padding: const EdgeInsets.all(10.0),
-          child: Column(
-            children: [
-              filterOptionsWidget,
-              const SizedBox(height: 15),
-              Expanded(
-                child: transactionListWidget,
-              ),
-            ],
+        child: PopScope(
+          canPop: false,
+          onPopInvoked: (bool didPop){
+            if(didPop){
+              return;
+            }
+            if(staleDataPossibilityInParent!){
+              Navigator.of(context).pop('update');
+            }else{
+              Navigator.of(context).pop();
+            }
+          },
+
+          child: Container(
+            margin: const EdgeInsets.all(10.0),
+            padding: const EdgeInsets.all(10.0),
+            child: Column(
+              children: [
+                filterOptionsWidget,
+                const SizedBox(height: 15),
+                Expanded(
+                  child: transactionListWidget,
+                ),
+              ],
+            ),
           ),
         ),
       ),

@@ -3,9 +3,9 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:expense_tracker/services/services.dart' as services;
 import 'package:expense_tracker/models/transaction.dart' as transaction_model;
+import 'package:expense_tracker/utils/constants.dart' as constants;
 import 'package:sqflite/sqflite.dart' as sqflite;
 
-const List<String> transactionTypes = <String>['Debit', 'Credit'];
 
 
 class TransactionForm extends StatefulWidget {
@@ -22,7 +22,7 @@ class TransactionFormState extends State<TransactionForm> {
   final _dateController = TextEditingController(
     text: DateFormat('dd-MMM-yyyy').format(DateTime.now()),
   );
-  String _transactionType =transactionTypes.first;
+  String _transactionType = constants.transactionTypes.first;
 
 
   @override
@@ -88,7 +88,7 @@ class TransactionFormState extends State<TransactionForm> {
     _titleController.clear();
     _dateController.text = DateFormat('dd-MMM-yyyy').format(DateTime.now());
     setState(() {
-      _transactionType = transactionTypes.first;
+      _transactionType = constants.transactionTypes.first;
     });
   }
 
@@ -183,7 +183,7 @@ class TransactionFormState extends State<TransactionForm> {
                       border: OutlineInputBorder(),
                       filled: true,
                     ),
-                    items: transactionTypes
+                    items: constants.transactionTypes
                         .map<DropdownMenuItem<String>>((String value) {
                       return DropdownMenuItem<String>(
                         value: value,
