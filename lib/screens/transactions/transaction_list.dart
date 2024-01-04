@@ -23,6 +23,7 @@ class TransactionListState extends State<TransactionList> {
   bool isLoadingOptions = true;
   List<String> transactionMonths = ['All'];
   int? month, year;
+  String? selectedOption;
 
   @override
   void initState() {
@@ -32,6 +33,13 @@ class TransactionListState extends State<TransactionList> {
     getFilterOptionsList();
     month = null;
     year = null;
+    selectedOption = transactionMonths[0];
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
   }
 
   Future<void> getFilterOptionsList() async {
@@ -83,7 +91,11 @@ class TransactionListState extends State<TransactionList> {
     }
     if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
       // Load more data when the user scrolls to the end of the list
-      _loadMoreDataOnScroll();
+      if(month == null){
+        _loadMoreDataOnScroll();
+      }else{
+        _loadMoreDataOnScroll(month: month, year: year);
+      }
     }
   }
 
@@ -103,7 +115,6 @@ class TransactionListState extends State<TransactionList> {
         OFFSET $offset
       ''');
     }else{
-      assert(year != null);
       queryResult = await db.rawQuery('''
         SELECT * FROM transactions
         WHERE month = $month AND year = $year
@@ -133,10 +144,11 @@ class TransactionListState extends State<TransactionList> {
       isLoadingTransactions=true;
       offset = 0;
       transactions.clear();
-      // _scrollController.addListener(_onScroll);
+      // safety check to remove listener before adding it
+      _scrollController.removeListener(_onScroll);
+      _scrollController.addListener(_onScroll);
       // very important to jump scroller to top
       _scrollController.jumpTo(0.0);
-
     });
 
     final db = Provider.of<services.Services>(context, listen: false).getDB();
@@ -149,15 +161,12 @@ class TransactionListState extends State<TransactionList> {
         LIMIT $limit
       ''');
     }else{
-      assert(year != null);
-      print("$year---$month\n");
       queryResult = await db.rawQuery('''
         SELECT * FROM transactions
         WHERE month = $month AND year = $year
         ORDER BY year DESC, month DESC, day DESC, id DESC
         LIMIT $limit
       ''');
-      print(queryResult.map((e) => e['month']).toList());
     }
     await Future.delayed(const Duration(milliseconds: 500), () {});
 
@@ -193,22 +202,25 @@ class TransactionListState extends State<TransactionList> {
                 filled: true,
                 fillColor: Colors.white,
               ),
-              value: transactionMonths[0],
+              value: selectedOption,
               icon: const Icon(Icons.arrow_downward, color: Colors.deepPurple),
               iconSize: 24,
               elevation: 16,
               style: const TextStyle(color: Colors.deepPurple),
               onChanged: (String? newValue) {
-                
-                // if(newValue == 'All'){
-                //   month = null; year=null;
-                // }else{
-                //   month = constants.monthNameToNum[newValue!.split('-')[0]];
-                //   year = int.parse(newValue.split('-')[1]);
-                // }
-                // setState((){}); // call to update state
-                // reloadTransactionsOnOptionChange(month, year);
-
+                // check if new value and old value are same
+                if(newValue == selectedOption){
+                  return;
+                }
+                selectedOption = newValue;
+                if(newValue == 'All'){
+                  month = null; year=null;
+                }else{
+                  month = constants.monthNameToNum[newValue!.split('-')[0]];
+                  year = int.parse(newValue.split('-')[1]);
+                }
+                setState((){}); // call to update state
+                reloadTransactionsOnOptionChange(month, year);
               },
               items: transactionMonths.map((String value) {
                 return DropdownMenuItem<String>(
