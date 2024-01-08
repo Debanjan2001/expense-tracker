@@ -45,6 +45,13 @@ class TransactionListState extends State<TransactionList> {
   }
 
   Future<void> getFilterOptionsList() async {
+    setState((){
+      isLoadingOptions=true;
+      transactionMonths.clear();
+      // add 'All' as default option
+      transactionMonths.add('All'); 
+    });
+
     final db = Provider.of<services.Services>(context, listen: false).getDB();
     final availableMonths = await db.rawQuery('''
       SELECT DISTINCT month, year 
@@ -268,6 +275,7 @@ class TransactionListState extends State<TransactionList> {
             );
             if(result == 'update'){
               reloadTransactionsOnOptionChange(month, year);
+              getFilterOptionsList();
               setState(() {
                 staleDataPossibilityInParent = true;
               });
